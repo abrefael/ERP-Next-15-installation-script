@@ -72,7 +72,7 @@ read -p "Frappe is initialized. Would you like to continue to create a site? (Y/
 if [ $ans = "n" ]; then exit 0; fi 
 read -p "Please enter ne site name: " newSite
 bench new-site $newSite
-read -p "New site was created. Would you like to continue to install ERPNext? (Y/n)" ans
+read -p "New site was created. Would you like to continue to install ERPNext? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi 
 bench use $newSite
 bench get-app payments
