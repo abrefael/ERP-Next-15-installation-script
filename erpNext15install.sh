@@ -26,8 +26,8 @@ echo "Let's begin with your timezone."
 echo -e "What is your time zone?\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
 read -p "" timez
 timedatectl set-timezone "$timez"
-read -s -p "Please enter sudo password: " passwrd
-read -s -p "Please enter mysql root password: " sql_passwrd
+read -p "Please enter sudo password: " -s passwrd
+read -p "Please enter mysql root password: " -s sql_passwrd
 read -p "Let's Update the system first. Please hit Enter to start..."
 sudo apt-get update -y
 sudo apt-get upgrade -y
