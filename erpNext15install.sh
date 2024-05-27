@@ -30,7 +30,7 @@ read -p "Please enter sudo password: " -s passwrd
 read -p "Please enter mysql root password: " -s sql_passwrd
 read -p "Let's Update the system first. Please hit Enter to start..."
 sudo apt-get update -y
-sudo apt-get upgrade -y
+sudo NEEDRESTART_MODE=a apt-get upgrade -y
 read -p "Now, we'll install some prerequisites. Please hit Enter to start..."
 echo $passwrd | sudo -S apt -qq install nano git curl -y
 echo $passwrd | sudo -S apt -qq install python3-dev python3.10-dev python3-pip -y
@@ -59,7 +59,9 @@ echo $passwrd | sudo -S sh mysql.sh
 echo $passwrd | sudo -S service mysql restart
 read -p "Next, we'll install Node, NPM and Yarn. Please hit Enter..."
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-source ~/.profile
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 nvm install 18
 echo $passwrd | sudo -S apt-get install npm -y
 echo $passwrd | sudo -S npm install -g yarn
