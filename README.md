@@ -10,8 +10,9 @@ usermod -aG sudo [frappe-user]
 and then log in using the [frapp-user] above. the rest is to execute:
 
 ```
+wget https://raw.githubusercontent.com/abrefael/ERP-Next-15-installation-script/main/erpNext15install.sh
 sudo chmod +x erpNext15install.sh
-./frappe_install.sh
+./erpNext15install.sh
 ```
 
 And follow the instructions. You will be prompt to supply your sudo password (the password that you gave your [frappe-user]) and a required password for your mariadb server root acount (select something complex enough, but a password you can remember...).
