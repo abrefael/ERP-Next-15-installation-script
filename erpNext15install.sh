@@ -32,11 +32,11 @@ read -p "Let's Update the system first. Please hit Enter to start..."
 sudo apt-get update -y
 sudo NEEDRESTART_MODE=a apt-get upgrade -y
 read -p "Now, we'll install some prerequisites. Please hit Enter to start..."
-echo $passwrd | sudo -S apt -qq install nano git curl -y
-echo $passwrd | sudo -S apt -qq install python3-dev python3.10-dev python3-pip -y
-echo $passwrd | sudo -S apt -qq install python3.10-venv -y
-echo $passwrd | sudo -S apt -qq install cron software-properties-common mariadb-client mariadb-server -y
-echo $passwrd | sudo -S apt -qq install redis-server xvfb libfontconfig wkhtmltopdf -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install nano git curl -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3-dev python3.10-dev python3-pip -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3.10-venv -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install cron software-properties-common mariadb-client mariadb-server -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install supervisor redis-server xvfb libfontconfig wkhtmltopdf -y
 read -p "Let's configure your Mariadb server. Please hit Enter to start..."
 echo $passwrd | sudo -S mysql_secure_installation <<EOF
 
