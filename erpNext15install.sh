@@ -74,16 +74,30 @@ read -p "Frappe is initialized. Would you like to continue to create a site? (Y/
 if [ $ans = "n" ]; then exit 0; fi 
 read -p "Please enter ne site name: " newSite
 bench new-site $newSite
-read -p "New site was created. Would you like to continue to install ERPNext? (Y/n) " ans
-if [ $ans = "n" ]; then exit 0; fi 
 bench use $newSite
-bench get-app payments
-bench get-app --branch version-15 erpnext
-bench get-app hrms
-bench install-app erpnext
-bench install-app hrms
+echo -e "If you wish to install a custom app(S), enter it's URI(s)\n"
+echo -e "First one:\n"
+while read URI; do
+ if [ "$URI" = "" ]; then
+ break
+ fi
+ IFS='/' read -a array <<< "$URI"
+ bench get-app --resolve-deps $URI
+ bench install-app ${array[-1]}
+ URI=""
+ echo -e "Any more apps? Enter another URI (otherwise hit Enter):\n"
+done
+read -p "New site was created. Would you like to continue to install ERPNext? (y/N) " ans
+if [ $ans = "y" ]; then 
+  bench get-app payments
+  bench get-app --branch version-15 erpnext
+  bench get-app hrms
+  bench install-app erpnext
+  bench install-app hrms
+fi
 read -p "Good! Now, is your server ment for production? (Y/n) " ans
-if [ $ans = "n" ]; then exit 0; fi 
+if [ $ans = "n" ]; then exit 0; fi
+echo $passwrd | sudo -S sed -i -e 's/include:/include_tasks:/g' /usr/local/lib/python3.10/dist-packages/bench/playbooks/roles/mariadb/tasks/main.yml
 bench enable-scheduler
 bench set-maintenance-mode off
 echo $passwrd | sudo -S bench setup production $USER
