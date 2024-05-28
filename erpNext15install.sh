@@ -26,8 +26,8 @@ echo "Let's begin with your timezone."
 echo -e "What is your time zone?\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
 read -p "" timez
 timedatectl set-timezone "$timez"
-read -p "Please enter sudo password: " -s passwrd
-read -p "Please enter mysql root password: " -s sql_passwrd
+read -p $"\n\n\nPlease enter sudo password:\n" -s passwrd
+read -p $"Please enter mysql root password: \n" -s sql_passwrd
 read -p "Let's Update the system first. Please hit Enter to start..."
 sudo apt-get update -y
 sudo NEEDRESTART_MODE=a apt-get upgrade -y
@@ -63,7 +63,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 nvm install 18
-echo $passwrd | sudo -S apt-get install npm -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt-get install npm -y
 echo $passwrd | sudo -S npm install -g yarn
 read -p "well, now we are ready to install frappe. Reay? :-) Hit Enter..."
 echo $passwrd | sudo -S pip3 install frappe-bench
@@ -73,7 +73,7 @@ chmod -R o+rx /home/$USER/
 read -p "Frappe is initialized. Would you like to continue to create a site? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi 
 read -p "Please enter ne site name: " newSite
-bench new-site $newSite
+bench new-site $newSite --db-root-password $sql_passwrd
 bench use $newSite
 echo -e "If you wish to install a custom app(S), enter it's URI(s)\n"
 echo -e "First one:\n"
@@ -83,7 +83,7 @@ while read URI; do
  fi
  IFS='/' read -a array <<< "$URI"
  bench get-app --resolve-deps $URI
- bench install-app ${array[-1]}
+ bench install-app ${array[-1]:0:-4}
  URI=""
  echo -e "Any more apps? Enter another URI (otherwise hit Enter):\n"
 done
