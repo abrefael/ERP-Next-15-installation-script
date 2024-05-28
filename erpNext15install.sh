@@ -75,19 +75,23 @@ if [ $ans = "n" ]; then exit 0; fi
 read -p "Please enter ne site name: " newSite
 bench new-site $newSite --db-root-password $sql_passwrd
 bench use $newSite
-echo -e "If you wish to install a custom app(S), enter it's URI(s)\n"
-echo -e "First one:\n"
+echo -e "If you wish to install a custom apps, enter it's URIs.\nStarting with the first:\n"
 while read URI; do
  if [ "$URI" = "" ]; then
  break
  fi
  IFS='/' read -a array <<< "$URI"
  bench get-app --resolve-deps $URI
- bench install-app ${array[-1]:0:-4}
+ app_name=${array[-1]}
+ if [[ $app_name == *".git" ]]; then
+ bench install-app "${app_name:0:-4}";
+ else 
+ bench install-app "${app_name}";
+ fi
  URI=""
  echo -e "Any more apps? Enter another URI (otherwise hit Enter):\n"
 done
-read -p "New site was created. Would you like to continue to install ERPNext? (y/N) " ans
+read -p "Would you like to continue and install ERPNext? (y/N) " ans
 if [ $ans = "y" ]; then 
   bench get-app payments
   bench get-app --branch version-15 erpnext
