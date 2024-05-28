@@ -26,11 +26,14 @@ echo "Let's begin with your timezone."
 echo -e "What is your time zone?\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
 read -p "" timez
 timedatectl set-timezone "$timez"
-read -p $"\n\n\nPlease enter sudo password:\n" -s passwrd
-read -p $"Please enter mysql root password: \n" -s sql_passwrd
+echo -e "\n\n\n"
+read -p "Please enter sudo password:" -s passwrd
+echo -e "\n"
+read -p "Please enter mysql root password:" -s sql_passwrd
+echo -e "\n\n"
 read -p "Let's Update the system first. Please hit Enter to start..."
-sudo apt-get update -y
-sudo NEEDRESTART_MODE=a apt-get upgrade -y
+echo $passwrd | sudo apt-get update -y
+echo $passwrd | sudo NEEDRESTART_MODE=a apt-get upgrade -y
 read -p "Now, we'll install some prerequisites. Please hit Enter to start..."
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install nano git curl -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3-dev python3.10-dev python3-pip -y
