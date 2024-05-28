@@ -102,12 +102,22 @@ fi
 read -p "Good! Now, is your server ment for production? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi
 echo $passwrd | sudo -S sed -i -e 's/include:/include_tasks:/g' /usr/local/lib/python3.10/dist-packages/bench/playbooks/roles/mariadb/tasks/main.yml
-bench enable-scheduler
-bench set-maintenance-mode off
-echo $passwrd | sudo -S bench setup production $USER
-bench setup nginx
-sudo supervisorctl restart all
-sudo bench setup production $USER
+yes | sudo bench setup production $USER
+FILE="/etc/supervisor/supervisord.conf"
+SEARCH_PATTERN="chown=$USER:$USER"
+if grep -q "$SEARCH_PATTERN" "$FILE"; then
+ echo $passwrd | sudo -S sed -i "/chown=.*/c $SEARCH_PATTERN" "$FILE"
+else
+ echo $passwrd | sudo -S sed -i "5a $SEARCH_PATTERN" "$FILE"
+fi
+echo $passwrd | sudo -S service supervisor restart
+yes | sudo bench setup production $USER
+bench --site $site_name scheduler enable
+bench --site $site_name scheduler resume
+bench setup socketio
+yes | bench setup supervisor
+bench setup redis
+echo $passwrd | sudo supervisorctl reload
 cat << EOF
 You can now go to your server [IP-address]:80 and you will have a fresh new installation of ERPNext ready to be configured!
 If you are facing any issues with the ports, make sure to enable all the necessary ports on your firewall using the below commands:
