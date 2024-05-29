@@ -21,10 +21,9 @@ https://discuss.frappe.io/t/guide-how-to-install-erpnext-v15-on-linux-ubuntu-ste
 Good luck :-)
 
 EOF
-ans = ""
 echo -e "Let's begin with your timezone.\nTake a look at your current date and time: $(date)\nIs it correct? [Y/n]"
 read ans
-if [ $ans = "n" ]; then
+if [ "$ans" = "n" ]; then
  echo -e "What is your time zone? (e.g.: Africa/Ceuta)\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
  read -p "" timez
  timedatectl set-timezone "$timez"
