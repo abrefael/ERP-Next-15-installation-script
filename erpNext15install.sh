@@ -122,7 +122,7 @@ bench --site $site_name scheduler resume
 bench setup socketio
 yes | bench setup supervisor
 bench setup redis
-echo $passwrd | sudo supervisorctl reload
+echo $passwrd | sudo -S supervisorctl reload
 cat << EOF
 You can now go to your server [IP-address]:80 and you will have a fresh new installation of ERPNext ready to be configured!
 If you are facing any issues with the ports, make sure to enable all the necessary ports on your firewall using the below commands:
