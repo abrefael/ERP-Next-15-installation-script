@@ -12,8 +12,8 @@ The process is constructed of a few parts:
 4. installing the base infrastructure (i.e.: Node, npm and yarn)
 5. Installing Frappe-bench and initializing it.
 6. (Optional) setting up a new site.
-7. (Optional) Installing ERP-Next.
-8. (Optional) Making your server ready for production.
+7. (Optional) Installing ERP-Next and additional custom applications.
+8. (Optional) Making your server ready for production (with or with SSL conactivity).
 
 This script is based on guide by shashank_shirke on the Frappe Forum:
 https://discuss.frappe.io/t/guide-how-to-install-erpnext-v15-on-linux-ubuntu-step-by-step-instructions/111706
@@ -22,14 +22,17 @@ Good luck :-)
 
 EOF
 
-echo "Let's begin with your timezone."
-echo -e "What is your time zone?\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
-read -p "" timez
-timedatectl set-timezone "$timez"
-echo -e "\n\n\n"
-read -p "Please enter sudo password:" -s passwrd
+echo -e "Let's begin with your timezone.\nTake a look at your current date and time: $(date)\nIs it correct? [Y/n]"
+read ans
+if [ $ans = "n" ]; then
+ echo -e "What is your time zone? (e.g.: Africa/Ceuta)\n (Hint: if you don't know your time zone identifier, checkout the following Wikipedia page:\nhttps://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
+ read -p "" timez
+ timedatectl set-timezone "$timez"
+fi 
+ans=""
+read -rsp "Please enter sudo password:" passwrd
 echo -e "\n"
-read -p "Please enter mysql root password:" -s sql_passwrd
+read -rsp "Please enter mysql root password:" sql_passwrd
 echo -e "\n\n"
 read -p "Let's Update the system first. Please hit Enter to start..."
 echo $passwrd | sudo apt-get update -y
@@ -41,24 +44,21 @@ echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3.10-venv -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install cron software-properties-common mariadb-client mariadb-server -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install supervisor redis-server xvfb libfontconfig wkhtmltopdf -y
 read -p "Let's configure your Mariadb server. Please hit Enter to start..."
-echo $passwrd | sudo -S mysql_secure_installation <<EOF
+echo $passwrd | sudo -S mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
+echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
+echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DELETE FROM mysql.user WHERE User='';"
+echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DROP DATABASE IF EXISTS test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "FLUSH PRIVILEGES;"
+echo $passwrd | sudo -S bash -c 'cat << EOF >> /etc/mysql/my.cnf
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
 
-y
-y
-$sql_passwrd
-$sql_passwrd
-y
-n
-y
-y
-EOF
-touch mysql.sh
-cat <<EOF > mysql.sh
-#!/bin/bash
-echo "\n\n\n[mysqld]\ncharacter-set-client-handshake = FALSE\ncharacter-set-server = utf8mb4\ncollation-server = utf8mb4_unicode_ci\n\n\n[mysql]\ndefault-character-set = utf8mb4\n\n" >> /etc/mysql/my.cnf
-rm /home/$USER/mysql.sh
-EOF
-echo $passwrd | sudo -S sh mysql.sh
+[mysql]
+default-character-set = utf8mb4
+EOF'
+
 echo $passwrd | sudo -S service mysql restart
 read -p "Next, we'll install Node, NPM and Yarn. Please hit Enter..."
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
@@ -75,6 +75,7 @@ cd frappe-bench/
 chmod -R o+rx /home/$USER/
 read -p "Frappe is initialized. Would you like to continue to create a site? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi 
+ans=""
 read -p "Please enter ne site name: " newSite
 bench new-site $newSite --db-root-password $sql_passwrd
 bench use $newSite
@@ -96,6 +97,7 @@ while read URI; do
 done
 read -p "Would you like to continue and install ERPNext? (y/N) " ans
 if [ $ans = "y" ]; then 
+  ans=""
   bench get-app payments
   bench get-app --branch version-15 erpnext
   bench get-app hrms
@@ -103,7 +105,8 @@ if [ $ans = "y" ]; then
   bench install-app hrms
 fi
 read -p "Good! Now, is your server ment for production? (Y/n) " ans
-if [ $ans = "n" ]; then exit 0; fi
+if [ $ans = "n" ]; then exit 0; fi 
+ans=""
 echo $passwrd | sudo -S sed -i -e 's/include:/include_tasks:/g' /usr/local/lib/python3.10/dist-packages/bench/playbooks/roles/mariadb/tasks/main.yml
 yes | sudo bench setup production $USER
 FILE="/etc/supervisor/supervisord.conf"
