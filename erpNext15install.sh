@@ -21,7 +21,7 @@ https://discuss.frappe.io/t/guide-how-to-install-erpnext-v15-on-linux-ubuntu-ste
 Good luck :-)
 
 EOF
-
+ans = ""
 echo -e "Let's begin with your timezone.\nTake a look at your current date and time: $(date)\nIs it correct? [Y/n]"
 read ans
 if [ $ans = "n" ]; then
