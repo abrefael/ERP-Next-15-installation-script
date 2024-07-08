@@ -42,13 +42,16 @@ echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3-dev python3.1
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3.10-venv -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install cron software-properties-common mariadb-client mariadb-server -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install supervisor redis-server xvfb libfontconfig wkhtmltopdf -y
-read -p "Let's configure your Mariadb server. Please hit Enter to start..."
-echo $passwrd | sudo -S mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
-echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
-echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DELETE FROM mysql.user WHERE User='';"
-echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DROP DATABASE IF EXISTS test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
-echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "FLUSH PRIVILEGES;"
-echo $passwrd | sudo -S bash -c 'cat << EOF >> /etc/mysql/my.cnf
+MARKER_FILE=~/.MariaDB_handled.marker
+
+if [ ! -f "$MARKER_FILE" ]; then
+ read -p "Let's configure your Mariadb server. Please hit Enter to start..."
+ echo $passwrd | sudo -S mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
+ echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$sql_passwrd';"
+ echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DELETE FROM mysql.user WHERE User='';"
+ echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "DROP DATABASE IF EXISTS test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+ echo $passwrd | sudo -S mysql -u root -p"$sql_passwrd" -e "FLUSH PRIVILEGES;"
+ echo $passwrd | sudo -S bash -c 'cat << EOF >> /etc/mysql/my.cnf
 [mysqld]
 character-set-client-handshake = FALSE
 character-set-server = utf8mb4
@@ -58,7 +61,9 @@ collation-server = utf8mb4_unicode_ci
 default-character-set = utf8mb4
 EOF'
 
-echo $passwrd | sudo -S service mysql restart
+ echo $passwrd | sudo -S service mysql restart
+ touch "$MARKER_FILE"
+fi
 read -p "Next, we'll install Node, NPM and Yarn. Please hit Enter..."
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
