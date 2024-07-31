@@ -34,8 +34,8 @@ echo -e "\n"
 read -rsp "Please enter mysql root password:" sql_passwrd
 echo -e "\n\n"
 read -p "Let's Update the system first. Please hit Enter to start..."
-echo $passwrd | sudo apt-get update -y
-echo $passwrd | sudo NEEDRESTART_MODE=a apt-get upgrade -y
+echo $passwrd | sudo -S apt-get update -y
+echo $passwrd | sudo -S NEEDRESTART_MODE=a apt-get upgrade -y
 read -p "Now, we'll install some prerequisites. Please hit Enter to start..."
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install nano git curl -y
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt -qq install python3-dev python3.10-dev python3-pip -y
