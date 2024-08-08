@@ -122,8 +122,8 @@ else
 fi
 echo $passwrd | sudo -S service supervisor restart
 yes | sudo bench setup production $USER
-bench --site $site_name scheduler enable
-bench --site $site_name scheduler resume
+bench --site $newSite scheduler enable
+bench --site $newSite scheduler resume
 bench setup socketio
 yes | bench setup supervisor
 bench setup redis
