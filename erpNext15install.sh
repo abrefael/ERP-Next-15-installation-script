@@ -146,9 +146,9 @@ bench config dns_multitenant on
 read -p "Please enter your ERPNext server FQDN: " fqdn
 bench setup add-domain $fqdn --site $newSite
 bench setup nginx 
-echo $passwrd | sudo -S service nginx reload
-echo $passwrd | sudo -S snap install core
-echo $passwrd | sudo -S snap refresh core
-echo $passwrd | sudo -S snap install --classic certbot
-echo $passwrd | sudo -S ln -s /snap/bin/certbot /usr/bin/certbot
-echo $passwrd | sudo -S certbot --nginx
+sudo service nginx reload
+sudo snap install core
+sudo snap refresh core
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+sudo certbot --nginx
