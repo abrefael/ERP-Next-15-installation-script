@@ -80,7 +80,7 @@ chmod -R o+rx /home/$USER/
 read -p "Frappe is initialized. Would you like to continue to create a site? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi 
 ans=""
-read -p "Please enter ne site name: " newSite
+read -p "Please enter new site name: " newSite
 bench new-site $newSite --db-root-password $sql_passwrd
 bench use $newSite
 echo -e "If you wish to install a custom apps, enter it's URIs.\nStarting with the first:\n"
