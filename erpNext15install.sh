@@ -72,7 +72,7 @@ export NVM_DIR="$HOME/.nvm"
 nvm install 18
 echo $passwrd | sudo -S NEEDRESTART_MODE=a apt-get install npm -y
 echo $passwrd | sudo -S npm install -g yarn
-read -p "well, now we are ready to install frappe. Reay? :-) Hit Enter..."
+read -p "well, now we are ready to install frappe. Ready? :-) Hit Enter..."
 echo $passwrd | sudo -S pip3 install frappe-bench
 bench init --frappe-branch version-15 frappe-bench
 cd frappe-bench/
