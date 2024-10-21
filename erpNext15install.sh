@@ -75,8 +75,8 @@ echo $passwrd | sudo -S npm install -g yarn
 read -p "well, now we are ready to install frappe. Ready? :-) Hit Enter..."
 echo $passwrd | sudo -S pip3 install frappe-bench
 bench init --frappe-branch version-15 frappe-bench
+chmod -R o+rx .
 cd frappe-bench/
-chmod -R o+rx /home/$USER/
 read -p "Frappe is initialized. Would you like to continue to create a site? (Y/n) " ans
 if [ $ans = "n" ]; then exit 0; fi 
 ans=""
